@@ -33,42 +33,43 @@ void dump_cache() {
 }
 
 int main() {
-    // printf("%d", sizeof(__uint128_t));
+    int mb_unit = 256;
+    int loop_time = 10;
+    bool is_dump_cache = true;
+
     // allocate 1gb memory
     long long int *ptr = (char*) malloc(1024 * 1024 * 1024 * sizeof(char));
 
-    bool is_dump_cache = false;
     int fd;
     struct timespec start, end;
-    // 125 mb to 1gb
-    for (long long int i=1; i < 5; i++) {
+    double average_time = 0.0;
+    for (long long int i=1; i <= 1024/mb_unit; i++) {
 
         if (is_dump_cache)
             dump_cache();
 
-        // 256 mb/unit
-        long long int count = 128 * 1024 * 256 * i;
-        // clock_gettime(CLOCK_REALTIME, &start);
+        long long int count = 128 * 1024 * mb_unit * i;
         
         // 10 times
         long int total_time = 0;
-        for (int k =0; k < 10; k++){
+        for (int k =0; k < loop_time; k++){
             if (is_dump_cache)
                 dump_cache();
             clock_gettime(CLOCK_REALTIME, &start);
+            // 8byte pre loop
             for (long long int j=0; j<count; j++) {
                 ptr[j] = 0;
-                // printf("%p %p\n", ptr+i, ptr+i+1);
+                // printf("%p %p\n", ptr+j, ptr+j+1);
             }
             clock_gettime(CLOCK_REALTIME, &end);
             total_time += diff_in_us(start, end);
         }
-        // clock_gettime(CLOCK_REALTIME, &end);
-        // long int cpu_time = diff_in_us(start, end);
-        printf("Execution Time: %ld us\n\n", total_time);
-        printf("Execution Time: %lf GB/s\n\n", 10 * (double)(i*0.25)/(double)((double)total_time/(double)1000000));
+        average_time += loop_time * (double)(i*mb_unit/(double)1024)/(double)((double)total_time/(double)1000000);
+        // printf("Execution Time: %ld us\n\n", total_time);
+        // printf("Execution Bandwidth: %lf GB/s\n\n", loop_time * (double)(i*mb_unit/(double)1024)/(double)((double)total_time/(double)1000000));
     }
+    average_time /= (float)1024/mb_unit;
+    printf("\nAverage Execution Bandwidth: %lf GB/s\n\n", average_time);
     close(fd);
-    // printf("%p %p", ptr, ptr+1);
     free(ptr);
 }   
