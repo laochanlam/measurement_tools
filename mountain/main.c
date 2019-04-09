@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include "fcyc2.h"
-#define MAXELEMS 10000000
+#include "clock.h"
+#define MINBYTES (1 << 11)  /* Working set size ranges from 2 KB */
+#define MAXBYTES (1 << 25)  /* ... up to 64 MB */
+#define MAXSTRIDE 64        /* Strides range from 1 to 64 elems */
+#define MAXELEMS MAXBYTES/sizeof(double) 
 
-long data[MAXELEMS];
+
+double data[MAXELEMS];
 
 int test(int elems, int stride) {
     long i;
@@ -27,12 +32,26 @@ int test(int elems, int stride) {
     return ((acc0 + acc1) + (acc2 + acc3));
 }
 
-double run(int size, int stride, double Mhz) {
+double run(int size, int stride, double myMhz) {
     double cycles;
     int elems = size / sizeof(double);
     cycles = fcyc2(test, elems, stride, 0);
-    return (size / stride) / (cycles / Mhz);
+//    printf("[inside run] size: %d, stride: %d, cycles: %f, Mhz:%f\n", size, stride, cycles, myMhz);
+    return (size / stride) / (cycles / myMhz);
 }
+
+
 int main(){
-    run(100, 4, 1000);
+    double myMhz = mhz(1);
+//    printf("myMhz: %f\n", myMhz);
+    for (int i =0; i < MAXELEMS; i++) 
+        data[i] = i;
+
+    for (int size = MAXBYTES; size >= MINBYTES; size>>=1) {
+        for (int stride = 1; stride <= MAXSTRIDE; stride++) {
+	    printf("%d %d %f\n", size, stride, run(size, stride, myMhz));
+	}
+    }
+    //double result = run(4096, 4, myMhz);
+    //printf("%f\n", result);
 }
