@@ -10,7 +10,7 @@ using namespace std;
 
 int main(){
     vector<size_t> sizes_KB;
-    for (int i = 1; i < 18; i++) {
+    for (int i = 1; i < 25; i++) {
         sizes_KB.push_back(1 << i);
     }
 
@@ -31,6 +31,6 @@ int main(){
         clock_t end = clock();
 
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        cout << size << " KB, " << elapsed_secs << "secs, dummy: " << dummy << " " << size/elapsed_secs << "KB/s " << endl;
+        cout << size << " KB, " << elapsed_secs << "secs, dummy: " << dummy << " " << (4*(1<<25))/(elapsed_secs/(1<<25)) << "GB/s " << endl;
     }
 }   

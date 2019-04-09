@@ -24,14 +24,17 @@ int main(){
         memset(ptr, 1, KB(size));
         long long int dummy = 0;
 
-        clock_t begin = clock();
         for (long long int i=0; i< KB(size)/8; i++) {
             dummy += ptr[dis(gen)];
             // ptr[i] = 0;
         }
-        clock_t end = clock();
 
+        clock_t begin = clock();
+        for (long long int i=0; i< KB(size)/8; i++) {
+            dummy += ptr[i];
+        }
+        clock_t end = clock();
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        cout << size << " KB, " << elapsed_secs << "secs, dummy: " << dummy << "      " << size/1024.0/1024.0 /elapsed_secs << "GB/s " << endl;
+        cout << size << " KB, " << elapsed_secs << "secs,   " << KB(size)/1024.0/1024.0/1024.0 /elapsed_secs << "GB/s " << endl;
     }
 }   
