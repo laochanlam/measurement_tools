@@ -5,16 +5,18 @@
 #include <string.h>
 #include <libunwind.h>
 #include <stdio.h>
+#include "hotspot.h"
 
-struct itimerval tick;
+struct itimerval tick; 
 struct itimerval zero;
-
+   
 struct func_record {
     char name[1024];
     int occurrence;
-} func_record[1024];
+} func_record[1024]; 
 
-int func_count = 0;
+int func_count = 0; 
+
 
 void run_sample() {
    
@@ -56,7 +58,7 @@ void signal_handler(int signal) {
     }
 }
 
-void hot_spot_detect() {
+void hot_spot_analysis() {
     signal(SIGALRM, signal_handler);
     memset(&tick, 0, sizeof(tick));
     tick.it_value.tv_usec = 10000;    
@@ -65,7 +67,7 @@ void hot_spot_detect() {
 }
 
 
-void print_result(){ 
+void print_analysis(){ 
     int total_occurrence = 0;
     for (int i = 0; i < func_count; i++)
         total_occurrence += func_record[i].occurrence;
