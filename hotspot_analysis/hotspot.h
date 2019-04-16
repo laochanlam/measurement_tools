@@ -20,6 +20,6 @@ void run_sample();
 
 void signal_handler(int signal);
 
-void hot_spot_analysis();
+void hot_spot_analysis(int usec);
 
 void print_analysis(); 

@@ -6,11 +6,9 @@
 #include <libunwind.h>
 #include <stdio.h>
 #include "hotspot.h"
-//extern void hot_spot_detect();
-//extern void print_result();
 
 void funca(){
-    for (int i = 0; i < 100000; i++);
+    for (int i = 0; i < 100000000; i++);
 }
 
 int funcb(){
@@ -21,11 +19,22 @@ void funcc(){
     for (int i =0; i < 1000000000; i++);
 }
 
-int main(){
+void funcd(){
+    for (int i = 0; i < 10000; i++)
+        for (int j = 0; j < 100000; j++);
+}
 
-    hot_spot_analysis();
+void funce(){
+    for (int i = 0; i < 1000000; i++);
+}
+int main(){
+    hot_spot_analysis(500);
+    funce();
     funca();
     funcb();
+    funcd();
+    funca();
+    funca();
     funcc();
     print_analysis();
 }
