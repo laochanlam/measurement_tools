@@ -109,12 +109,13 @@ VOID Instruction(INS ins, VOID *v)
 
 VOID Fini(INT32 code, VOID *v)
 {
-    cout << "Size of map: " << myBPU.GetSizeOfBP() << endl;
+    cout << "################################################" << endl;
     cout << "DirectionMissCount: " << DirectionMissCount << endl;
     cout << "TargetMissCount: " << TargetMissCount << endl;
     cout << "BranchCount: " << BranchCount << endl;
     cout << "Branch Direction Miss rate: " << (DirectionMissCount / (float)BranchCount) * 100 << "%" << endl;
     cout << "Branch Target Miss rate: " << (TargetMissCount / (float)BranchCount) * 100 << "%" << endl;
+    cout << "################################################" << endl;
 }
 
 int main(int argc, char * argv[])
