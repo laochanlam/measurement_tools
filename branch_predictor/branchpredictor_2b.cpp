@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <list>
 #include <string>
 #include "pin.H"
 
@@ -10,33 +11,65 @@ typedef struct {
 } BP_Info;
 
 class BranchPredictor {
+private:
+
     map<ADDRINT, ADDRINT> TargetTable;
-    map<ADDRINT, bool> TakenTable;
-    
+    map<ADDRINT, int> BPState;
+
+    void UpdateState(bool BrTaken, ADDRINT PC) {
+        if (BrTaken)
+            BPState[PC]--;
+        if (!BrTaken)
+            BPState[PC]++;
+
+        if (BPState[PC] > 3)
+            BPState[PC] = 3;
+        if (BPState[PC] < 0)
+            BPState[PC] = 0;
+    }
+
+    bool GetState(ADDRINT PC) {
+        if (BPState[PC] == 0)
+            return true;
+        if (BPState[PC] == 1)
+            return true;
+        if (BPState[PC] == 2)
+            return false;
+        if (BPState[PC] == 3)
+            return false;
+        return true;
+    }
+
 
 public:
     BP_Info GetPrediction(ADDRINT PC) {
         BP_Info tmp_info;
 
-	if ( TargetTable.find(PC) == TargetTable.end() ) {
-	    //not found
-	    tmp_info.Taken = false;
-	    tmp_info.predTarget = -1;
-	    // not taken default
-	} else {
-	    tmp_info.Taken = TakenTable[PC];
-	    tmp_info.predTarget = TargetTable[PC];
-	}
+        if ( TargetTable.find(PC) == TargetTable.end() ) {
+            //not found
+            tmp_info.Taken = true;
+            tmp_info.predTarget = -1;
+            // taken default
+        } else {
+            tmp_info.Taken = GetState(PC);
+            tmp_info.predTarget = TargetTable[PC];
+        }
 
-	return tmp_info;
+        return tmp_info;
     }
-    
+
     void Update(ADDRINT PC, bool BrTaken, ADDRINT targetPC) {
         // if not equal & exist before
 //      if ( TargetTable[PC] != targetPC && TargetTable.find(PC) != TargetTable.end() )
 //	    cout << "Target Changed" << endl;
+
+        if ( BPState.find(PC) == BPState.end()) {
+            // init
+            BPState[PC] = 0;
+        }
+
+        UpdateState(BrTaken, PC);
 	    TargetTable[PC] = targetPC;
-	    TakenTable[PC] = BrTaken;
     }
     
     int GetSizeOfBP() {
