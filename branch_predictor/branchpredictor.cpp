@@ -4,6 +4,11 @@
 #include <string>
 #include "pin.H"
 
+std::ofstream TraceFile;
+
+KNOB<string> KnobOutputFile(KNOB_MODE_WRITEONCE, "pintool",
+    "o", "output.log", "specify trace file name");
+
 typedef struct {
     bool Taken;
     ADDRINT predTarget;
@@ -76,17 +81,20 @@ VOID Instruction(INS ins, VOID *v)
 
 VOID Fini(INT32 code, VOID *v)
 {
-    cout << "################################################" << endl;
-    cout << "DirectionMissCount: " << DirectionMissCount << endl;
-    cout << "TargetMissCount: " << TargetMissCount << endl;
-    cout << "BranchCount: " << BranchCount << endl;
-    cout << "Branch Direction Miss rate: " << (DirectionMissCount / (float)BranchCount) * 100 << "%" << endl;
-    cout << "Branch Target Miss rate: " << (TargetMissCount / (float)BranchCount) * 100 << "%" << endl;
-    cout << "################################################" << endl;
+    TraceFile << "################################################" << endl;
+    TraceFile << "DirectionMissCount: " << DirectionMissCount << endl;
+    TraceFile << "TargetMissCount: " << TargetMissCount << endl;
+    TraceFile << "BranchCount: " << BranchCount << endl;
+    TraceFile << "Branch Direction Miss rate: " << (DirectionMissCount / (float)BranchCount) * 100 << "%" << endl;
+    TraceFile << "Branch Target Miss rate: " << (TargetMissCount / (float)BranchCount) * 100 << "%" << endl;
+    TraceFile << "################################################" << endl;
 }
 
 int main(int argc, char * argv[])
 {
+    TraceFile.open(KnobOutputFile.Value().c_str());
+    TraceFile.setf(ios::showbase);
+    
     PIN_Init(argc, argv);
     INS_AddInstrumentFunction(Instruction, 0);
     PIN_AddFiniFunction(Fini, 0);
