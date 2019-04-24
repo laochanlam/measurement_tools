@@ -43,12 +43,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-
 #include <math.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "profile.h"
 
 //
 // configuration specification
@@ -430,6 +429,10 @@ static void test_main_sieve(void)
 
 int main(int argc,char **argv)
 {
+#ifdef WITH_PAPI
+  printf("[With PAPI profile...]\n");
+  init_and_start_collect();
+#endif
   double t;
   u32 i,j;
   u64 pi;
@@ -495,6 +498,10 @@ int main(int argc,char **argv)
   pi += (u64)count_zero_bits((u08 *)main_sieve,i);
   t = ((double)clock() - t) / (double)CLOCKS_PER_SEC;
   printf(" %7.2f %8llu\n",t,pi);
+#ifdef WITH_PAPI
+  end_of_collect();
+  calculate_and_printout();
+#endif
   return 0;
 }
 

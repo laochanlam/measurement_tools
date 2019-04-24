@@ -1,17 +1,14 @@
-#include "papi.h"
-
-#include <stdlib.h>
-
-#include <stdio.h>
-
-int main() {
+#include "profile.h"
 
     int EventSet;
 
     int i, sum;
 
-    long_long values[2], values1[2], values2[2];
+    long_long start[2], end[2], values[2];
 
+
+
+void init_and_start_collect() {
     if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
         exit(-1);
     EventSet = PAPI_NULL;
@@ -19,22 +16,28 @@ int main() {
     if (PAPI_create_eventset(&EventSet) != PAPI_OK)
         exit(-1);
 
-    if (PAPI_add_event(EventSet, PAPI_TOT_INS) != PAPI_OK)
+    if (PAPI_add_event(EventSet, PAPI_TOT_CYC) != PAPI_OK)
         exit(-1);
 
-    if (PAPI_add_event(EventSet, PAPI_L1_DCM) != PAPI_OK)
+    if (PAPI_add_event(EventSet, PAPI_LST_INS) != PAPI_OK)
         exit(-1);
+
+    //if (PAPI_add_event(EventSet, ) != PAPI_OK)
+    //    exit(-1);
+
 
     if (PAPI_start(EventSet) != PAPI_OK)
         exit(-1);
 
-    if (PAPI_read(EventSet, values1) != PAPI_OK)
+    if (PAPI_read(EventSet, start) != PAPI_OK)
         exit(-1);
+}
 
-    for (i=0;i<10000;i++)
-    sum+=i;
-
-    if (PAPI_stop(EventSet, values2) != PAPI_OK)
+//
+  //  for (i=0;i<10000;i++)
+   // sum+=i;
+void end_of_collect(){
+    if (PAPI_stop(EventSet, end) != PAPI_OK)
         exit(-1);
 
     if (PAPI_cleanup_eventset(EventSet) != PAPI_OK)
@@ -44,15 +47,17 @@ int main() {
         exit(-1);
 
     PAPI_shutdown();
-
+}
     /* Get value */
 
-    values[0]=values2[0]-values1[0];
+void calculate_and_printout(){
+    values[0]=end[0]-start[0];
 
-    values[1]=values2[1]-values1[1];
+    values[1]=end[1]-start[1];
 
-    printf("TOT_INS:%lld\nL1_DCM: %lld\n",values[0], values[1]);
+    
+    printf("PAPI_TOT_CYC:%lld\nPAPI_LST_INS: %lld\n",values[0], values[1]);
+    printf("CPI: %f\n", values[1]/(float)values[0]);
 
-    return 0;
 
 }
