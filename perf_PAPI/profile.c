@@ -15,7 +15,7 @@ void init_and_start_collect() {
 // Section1 CPI 
 //    if (PAPI_add_event(EventSet, PAPI_TOT_CYC) != PAPI_OK)
 //        exit(-1);
-//   if (PAPI_add_event(EventSet, PAPI_LST_INS) != PAPI_OK)
+//    if (PAPI_add_event(EventSet, PAPI_TOT_INS) != PAPI_OK)
 //        exit(-1);
 
 
@@ -36,28 +36,23 @@ void init_and_start_collect() {
 
 
 // Section4 TLB miss rate
-    if (PAPI_add_event(EventSet, PAPI_LD_INS) != PAPI_OK)
-        exit(-1);
-    if (PAPI_add_event(EventSet, PAPI_SR_INS) != PAPI_OK)
-        exit(-1);
-    if (PAPI_add_event(EventSet, PAPI_TLB_DM) != PAPI_OK)
-        exit(-1);
+//    if (PAPI_add_event(EventSet, PAPI_LD_INS) != PAPI_OK)
+//        exit(-1);
+//    if (PAPI_add_event(EventSet, PAPI_SR_INS) != PAPI_OK)
+//        exit(-1);
+//    if (PAPI_add_event(EventSet, PAPI_TLB_DM) != PAPI_OK)
+//        exit(-1);
 //    if (PAPI_add_event(EventSet, PAPI_TLB_IM) != PAPI_OK)
 //        exit(-1);
 
-
-
-/*   // [4]Level 1 cache misses
-    if (PAPI_add_event(EventSet, PAPI_L1_TCM) != PAPI_OK)
+// Section5 Branch miss prediction rate
+    if (PAPI_add_event(EventSet, PAPI_BR_MSP) != PAPI_OK)
         exit(-1);
-    // [5]Level 1 load misses
-    if (PAPI_add_event(EventSet, PAPI_L1_LDM) != PAPI_OK)
+    if (PAPI_add_event(EventSet, PAPI_BR_CN) != PAPI_OK)
         exit(-1);
-    // [6]Level 1 store misses
-    if (PAPI_add_event(EventSet, PAPI_L1_STM) != PAPI_OK)
+    if (PAPI_add_event(EventSet, PAPI_BR_PRC) != PAPI_OK)
         exit(-1);
-    printf("add okall");
-*/
+    
     if (PAPI_start(EventSet) != PAPI_OK)
         exit(-1);
 
@@ -84,7 +79,7 @@ void calculate_and_printout(){
 
         for (int i = 0; i < EVENTSIZE; i++) {
             values[i] = end[i] - start[i];
-//            printf("%lld\n", values[i]);
+	    printf("%lld\n", values[i]);
         }
 
 // Section1 CPI
@@ -97,5 +92,10 @@ void calculate_and_printout(){
 //        printf("L2 cache miss rate: %f\n", values[1]/(float)(values[0]));
 
 // Section4 TLB miss rate
-        printf("TLB miss rate: %f\n", (values[2]+values[3])/(float)(values[0]+values[1]));
+//        printf("TLB data miss rate: %.9f\n", (values[2])/(float)(values[0]+values[1]));
+//        printf("TLB instruction miss rate: %.9f\n", (values[2])/(float)(values[0]+values[1]));
+
+// Section5 Branch miss prediction rate
+        printf("Branch miss prediction rate: %f\n", values[0]/(float)(values[1]));
+
 }
